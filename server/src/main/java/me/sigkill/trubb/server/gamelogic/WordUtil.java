@@ -1,10 +1,8 @@
 package me.sigkill.trubb.server.gamelogic;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by Martin Engström on 2018-11-08.
@@ -18,5 +16,9 @@ public class WordUtil {
         s.close();
         Random random = new Random();
         return words.get(random.nextInt(words.size()));
+    }
+
+    public static LinkedList<Character> getGuessedCharsList(List<Character> e, String word, Character notGuessed) {
+        return word.chars().boxed().map(x -> new Character((char)x.intValue())).map(x -> e.contains(x) ? x : notGuessed).collect(Collectors.toCollection(LinkedList::new));
     }
 }

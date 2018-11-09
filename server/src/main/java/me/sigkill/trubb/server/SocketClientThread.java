@@ -4,6 +4,7 @@ import me.sigkill.trubb.common.exceptions.CharacterAlreadyGuessedException;
 import me.sigkill.trubb.common.models.request.GameGuessRequest;
 import me.sigkill.trubb.common.models.response.GameStateResponse;
 import me.sigkill.trubb.server.gamelogic.StrawManManager;
+import me.sigkill.trubb.server.gamelogic.WordUtil;
 
 import java.io.*;
 import java.net.Socket;
@@ -71,6 +72,7 @@ public class SocketClientThread extends Thread {
         tries.setTotal(10);
         response.setTries(tries);
         response.setWordLetterCount(manager.getState().getWord().length());
+        response.setWordLetterList(WordUtil.getGuessedCharsList(manager.getState().getChars(), manager.getState().getWord(), null));
         return response;
     }
 }

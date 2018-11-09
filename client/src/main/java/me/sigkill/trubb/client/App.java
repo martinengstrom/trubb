@@ -11,7 +11,6 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 
 public class App {
-	static final int PORT = 1337;
 	private static Socket socket;
 
 	public static void main(String[] args) throws IOException, InterruptedException {
@@ -22,13 +21,7 @@ public class App {
 
 		clearScreen();
 		System.out.println("Connected to remote host.");
-		/*
-		ObjectOiutputStream ous = new ObjectOutputStream(socket.getOutputStream());
-		TrubbRequest req = new TrubbRequest();
-		req.setName("Trubb");
-		ous.writeObject(req);
-		ous.close();
-		*/
+
 		AsciiArtHelper asciiArtHelper = new AsciiArtHelper();
 		ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
 		ObjectOutputStream ous = new ObjectOutputStream(socket.getOutputStream());
@@ -64,7 +57,15 @@ public class App {
 
 	private static void showMenu(GameStateResponse state) {
 		String guessedLetters = state.getGuessedLetters().stream().collect(Collectors.joining(" "));
-		System.out.print(String.format("%n%n(%s)%n[%d/%d] > ", guessedLetters, state.getTries().getRemaining(), state.getTries().getTotal()));
+		String wordLetterString = state.getWordLetterList().stream()
+				.map(x -> {
+					if (x != null)
+						return x.toString();
+					else
+						return "_";
+				})
+				.collect(Collectors.joining(""));
+		System.out.print(String.format("%n%s%n%n%n(%s)%n[%d/%d] > ", wordLetterString, guessedLetters, state.getTries().getRemaining(), state.getTries().getTotal()));
 	}
 
     private static GameStateResponse getGameState(ObjectInputStream ois) {

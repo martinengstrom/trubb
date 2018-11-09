@@ -1,6 +1,7 @@
 package me.sigkill.trubb.common.models.response;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -19,6 +20,7 @@ public class GameStateResponse implements Serializable {
     private Integer wordLetterCount;
     private Integer correctGuessCount;
     private List<String> guessedLetters;
+    private LinkedList<Character> wordLetterList;
 
     public Tries getTries() {
         return tries;
@@ -58,6 +60,14 @@ public class GameStateResponse implements Serializable {
 
     public void setGuessedLetters(List<String> guessedLetters) {
         this.guessedLetters = guessedLetters;
+    }
+
+    public LinkedList<Character> getWordLetterList() {
+        return wordLetterList;
+    }
+
+    public void setWordLetterList(LinkedList<Character> wordLetterList) {
+        this.wordLetterList = wordLetterList;
     }
 
     public static class Tries implements Serializable {
