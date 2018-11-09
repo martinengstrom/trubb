@@ -1,0 +1,8 @@
+common/target
+common/build
+client/target
+client/build
+server/target
+server/build
+.idea
+*.iml
