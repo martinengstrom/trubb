@@ -20,7 +20,47 @@ public class GameStateResponse implements Serializable {
     private Integer correctGuessCount;
     private List<String> guessedLetters;
 
-    public static class Tries {
+    public Tries getTries() {
+        return tries;
+    }
+
+    public void setTries(Tries tries) {
+        this.tries = tries;
+    }
+
+    public Integer getScore() {
+        return score;
+    }
+
+    public void setScore(Integer score) {
+        this.score = score;
+    }
+
+    public Integer getWordLetterCount() {
+        return wordLetterCount;
+    }
+
+    public void setWordLetterCount(Integer wordLetterCount) {
+        this.wordLetterCount = wordLetterCount;
+    }
+
+    public Integer getCorrectGuessCount() {
+        return correctGuessCount;
+    }
+
+    public void setCorrectGuessCount(Integer correctGuessCount) {
+        this.correctGuessCount = correctGuessCount;
+    }
+
+    public List<String> getGuessedLetters() {
+        return guessedLetters;
+    }
+
+    public void setGuessedLetters(List<String> guessedLetters) {
+        this.guessedLetters = guessedLetters;
+    }
+
+    public static class Tries implements Serializable {
         private Integer remaining;
         private Integer total;
 

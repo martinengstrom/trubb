@@ -53,6 +53,7 @@ public class SocketClientThread extends Thread {
 
             } catch (IOException e) {
                 // Error parsing input
+                throw new RuntimeException(e);
             } catch (ClassNotFoundException e) {
                 System.out.println(e);
                 // ignored
@@ -65,8 +66,11 @@ public class SocketClientThread extends Thread {
         response.setCorrectGuessCount(0);
         response.setGuessedLetters(manager.getState().getChars().stream().map(x -> x.toString()).collect(Collectors.toList()));
         response.setScore(0);
-        response.setTotalCount(manager.getState().getWord().length());
-        response.setTriesRemaining(manager.getState().getTriesRemaining());
+        GameStateResponse.Tries tries = new GameStateResponse.Tries();
+        tries.setRemaining(manager.getState().getTriesRemaining());
+        tries.setTotal(10);
+        response.setTries(tries);
+        response.setWordLetterCount(manager.getState().getWord().length());
         return response;
     }
 }

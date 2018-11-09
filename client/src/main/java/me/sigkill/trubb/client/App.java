@@ -2,6 +2,7 @@ package me.sigkill.trubb.client;
 
 import me.sigkill.trubb.common.models.request.GameGuessRequest;
 import me.sigkill.trubb.common.models.response.GameStateResponse;
+import me.sigkill.trubb.common.util.PropertiesUtil;
 
 import java.io.*;
 import java.net.InetSocketAddress;
@@ -11,11 +12,15 @@ import java.util.stream.Collectors;
 
 public class App {
 	static final int PORT = 1337;
+	private static Socket socket;
 
 	public static void main(String[] args) throws IOException, InterruptedException {
-		Socket socket = new Socket();
-		socket.connect(new InetSocketAddress("127.0.0.1", PORT));
+		PropertiesUtil properties = new PropertiesUtil();
+		socket = new Socket(properties.getGameHost(), properties.getGamePort());
 
+		//socket.connect(new InetSocketAddress("127.0.0.1", PORT));
+
+		clearScreen();
 		System.out.println("Connected to remote host.");
 		/*
 		ObjectOiutputStream ous = new ObjectOutputStream(socket.getOutputStream());
@@ -29,6 +34,7 @@ public class App {
 		ObjectOutputStream ous = new ObjectOutputStream(socket.getOutputStream());
 
 		while (true) {
+			checkConnection();
 			GameStateResponse gameState = getGameState(ois);
 
 			if (gameState == null) {
@@ -36,10 +42,11 @@ public class App {
 				continue;
 			}
 
-			if (gameState.getCorrectGuessCount().equals(gameState.getTotalCount()))
+			if (gameState.getCorrectGuessCount().equals(gameState.getWordLetterCount()))
 				break;
 
-			asciiArtHelper.print((gameState.getTriesRemaining() - 10) * -1);
+			clearScreen();
+			asciiArtHelper.print((gameState.getTries().getRemaining() - 10) * -1);
 			showMenu(gameState);
 			Scanner s= new Scanner(System.in);
 			char x = s.next().charAt(0);
@@ -50,13 +57,19 @@ public class App {
 		ois.close();
     }
 
-    private static void showMenu(GameStateResponse state) {
+	public static void clearScreen() {
+		System.out.print("\033[H\033[2J");
+		System.out.flush();
+	}
+
+	private static void showMenu(GameStateResponse state) {
 		String guessedLetters = state.getGuessedLetters().stream().collect(Collectors.joining(" "));
-		System.out.print(String.format("%n%n(%s)%n[%d/%d] > ", guessedLetters, state.getTriesRemaining(), 10));
+		System.out.print(String.format("%n%n(%s)%n[%d/%d] > ", guessedLetters, state.getTries().getRemaining(), state.getTries().getTotal()));
 	}
 
     private static GameStateResponse getGameState(ObjectInputStream ois) {
 		try {
+			checkConnection();
 			Object obj = ois.readObject();
 			if (obj instanceof GameStateResponse)
 				return (GameStateResponse)obj;
@@ -69,6 +82,7 @@ public class App {
 	}
 
 	private static void sendGuess(char c, ObjectOutputStream ous) throws IOException {
+		checkConnection();
 		GameGuessRequest req = new GameGuessRequest();
 		req.setLetter(c);
 
@@ -78,5 +92,10 @@ public class App {
 
     private static void print(String message) {
 		System.out.println(message);
+	}
+
+	private static void checkConnection() {
+		if (!socket.isConnected())
+			throw new RuntimeException("Socket disconnected");
 	}
 }
