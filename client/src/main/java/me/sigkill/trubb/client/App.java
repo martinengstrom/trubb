@@ -7,6 +7,7 @@ import me.sigkill.trubb.common.util.PropertiesUtil;
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.LinkedList;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
@@ -35,7 +36,8 @@ public class App {
 				continue;
 			}
 
-			if (gameState.getCorrectGuessCount().equals(gameState.getWordLetterCount()))
+			if ((gameState.getCorrectGuessCount().equals(gameState.getWordLetterCount())) ||
+					gameState.getTries().getRemaining() <= 0)
 				break;
 
 			clearScreen();
@@ -45,6 +47,8 @@ public class App {
 			char x = s.next().charAt(0);
 			sendGuess(x, ous);
 		}
+
+		System.out.println("Game over");
 
 		ous.close();
 		ois.close();
@@ -57,15 +61,19 @@ public class App {
 
 	private static void showMenu(GameStateResponse state) {
 		String guessedLetters = state.getGuessedLetters().stream().collect(Collectors.joining(" "));
-		String wordLetterString = state.getWordLetterList().stream()
+		String wordLetterString = formatWordHint(state.getWordLetterList(), "_");
+		System.out.print(String.format("%n%s%n%n%n(%s)%n[%d/%d] > ", wordLetterString, guessedLetters, state.getTries().getRemaining(), state.getTries().getTotal()));
+	}
+
+	private static String formatWordHint(LinkedList<Character> characters, String emptyValue) {
+		return characters.stream()
 				.map(x -> {
 					if (x != null)
 						return x.toString();
 					else
-						return "_";
+						return emptyValue;
 				})
 				.collect(Collectors.joining(""));
-		System.out.print(String.format("%n%s%n%n%n(%s)%n[%d/%d] > ", wordLetterString, guessedLetters, state.getTries().getRemaining(), state.getTries().getTotal()));
 	}
 
     private static GameStateResponse getGameState(ObjectInputStream ois) {
@@ -98,5 +106,8 @@ public class App {
 	private static void checkConnection() {
 		if (!socket.isConnected())
 			throw new RuntimeException("Socket disconnected");
+	}
+
+	private class GameOverException extends Exception {
 	}
 }
